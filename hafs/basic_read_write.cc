@@ -13,7 +13,7 @@ int main() {
     // // cout << "Data read: " << res << endl;
 
     // client1.Write(8192 + 2048, string(4096, 'm'));
-    // // client.Write(8192 + 2048, string(4096, 'a'));
+    client.Write(8192 + 2048, string(4096, 'a'));
     // // client.Write(4096, string(4096, 'b'));
     // // client.Write(8192, string(4096, 'c'));
     // // client.Write(8192 + 4096, string(4096, 'd'));
@@ -26,6 +26,9 @@ int main() {
     // // cout << "Data read: " << res << endl;
     // client1.Read(8192 + 2048, &res);
     // cout << "Data read: " << res << endl;
+    client.Read(8192 + 2048, &res);
+    cout << "Data read: " << res << endl;
+    cout << "Data Size: " << res.size() << endl;
     client.Read(8192 + 2048 + 8192 + 4096, &res);
     cout << "Data read: " << res << endl;
     cout << "Data Size: " << res.size() << endl;

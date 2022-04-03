@@ -22,6 +22,8 @@
 #include "common.cc"
 #include "replicator.h"
 
+#include "SHA256.cc"
+
 using ::Request;
 using ::HeartBeatResponse;
 using ::ReadRequest;
@@ -91,6 +93,13 @@ class HafsImpl final : public Hafs::Service {
             std::cout << "[Server] (ReplicateBlock) addr=" << req->address() << std::endl;
             blockManager.write(req->address(), req->data());
             res->set_status(Response_Status_VALID);
+            return Status::OK;
+        }
+
+        Status CheckConsistancy(ServerContext *context, const ReadRequest *req, CheckSum *res) override 
+        {
+            std::cout <<"[Server] Creating CheckSum"<<std::endl;
+            res->set_hash(blockManager.CalCheckSum(req->address()));
             return Status::OK;
         }
 

@@ -14,6 +14,8 @@
 #include <fstream>
 #include <utility>
 
+#include "SHA256.h"
+
 using namespace std;
 
 const int BLOCK_SIZE         = 4096;
@@ -228,5 +230,11 @@ class BlockManager {
             close(secondFd);
             return true;
         }
-        
+
+        string CalCheckSum(int addr)
+        {
+            string data;
+            read(addr,&data);
+            return sha256(data);
+        }       
 };
