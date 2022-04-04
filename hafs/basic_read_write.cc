@@ -12,7 +12,7 @@ int main() {
     // // client.Read(0, &res);
     // // cout << "Data read: " << res << endl;
 
-    for(int i = 0; i < 50000; i++) {
+    for(int i = 0; i < 10; i++) {
         client.Write(i*4096, string(4096, 'a'));
     }
 

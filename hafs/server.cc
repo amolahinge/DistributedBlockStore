@@ -32,7 +32,9 @@ using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
 
+using namespace std;
 std::mutex mtx; 
+
 
 class HafsImpl final : public Hafs::Service {
     private:
@@ -46,7 +48,7 @@ class HafsImpl final : public Hafs::Service {
             this->role = role;
             this->blockManager = blockManager;
             // this->replicator = replicator;
-            std::cout << "[Server] Starting up the Ha FS server!" << std::endl;
+            std::cout << "[Server] Starting up the Ha FS server in "<< role << " role!" << std::endl;
 
         }
 
@@ -67,6 +69,8 @@ class HafsImpl final : public Hafs::Service {
 
         Status Write(ServerContext *context, const WriteRequest *req, Response *res) override {
             std::cout << "[Server] (Write) addr=" << req->address() << std::endl;
+            std::cout << "[DEBUG AMOLA] server role " << role << std::endl;
+            crash(req->address(), "primaryFail");
             if(!replicator.otherMirrorClient.getIsAlive()) {
                 std::cout << "[Server](write) Other Replica down, sending block to replicator after local write!!" << std::endl;
                 blockManager.write(req->address(), req->data());
@@ -77,8 +81,10 @@ class HafsImpl final : public Hafs::Service {
             } else {
                 // std::cout << "Persisting block to other replica!" << std::endl;
                 if(replicator.otherMirrorClient.ReplicateBlock(req->address(), req->data())) {
+                    crash(req->address(), "clientRetryRequired");
                     blockManager.write(req->address(), req->data());
                     res->set_status(Response_Status_VALID);
+                    crash(req->address(), "onlyAckMissing");
                     return Status::OK;
                 } else {
                     std::cout << "[Server](write) Write to other replica fail!! Rejecting this write!" << std::endl;
@@ -91,8 +97,27 @@ class HafsImpl final : public Hafs::Service {
         Status ReplicateBlock(ServerContext *context, const WriteRequest *req, Response *res) override {
             std::cout << "[Server] (ReplicateBlock) addr=" << req->address() << std::endl;
             blockManager.write(req->address(), req->data());
+            
             res->set_status(Response_Status_VALID);
             return Status::OK;
+        }
+
+
+        void crash(int address, string mask){
+            if (address == 4096 && mask == "primaryFail" && role == HeartBeatResponse_Role_PRIMARY){
+                cout << "Primary failing before sending request to backup" << endl;
+                exit(1);
+            }
+
+            else if (address == 8192 && mask == "clientRetryRequired" && role == HeartBeatResponse_Role_PRIMARY){
+                cout << "Primary failing after receiving ack from backup (Temp inconsistency)" << endl;
+                exit(1);
+            }
+
+            else if (address == 12288 && mask == "onlyAckMissing" && role == HeartBeatResponse_Role_PRIMARY) {
+                cout << "Primary failing after just before sending ack (Dirty data on both primary and backup)" << endl;
+                exit(1);
+            }
         }
 
 };
@@ -128,3 +153,4 @@ int main(int argc, char **argv) {
     server->Wait();
     return 0;
 }
+

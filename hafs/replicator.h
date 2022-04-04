@@ -46,7 +46,12 @@ class Replicator {
                     usleep(2*1000000);
                 } else if(!pendingBlocks.empty()) {
                     health = HeartBeatResponse_Health_REINTEGRATION_AHEAD;
+                    std::chrono::time_point<std::chrono::system_clock> start, end;
+
+                    start = std::chrono::system_clock::now();
+                    int size = pendingBlocks.size();
                     while(!pendingBlocks.empty()) {
+
                         int nextPendingAddress = removeAndGetLastPendingBlock();
                         cout<< "[Replicator] Processing pending block [" << nextPendingAddress <<  "]" << endl;
                         string data;
@@ -56,12 +61,15 @@ class Replicator {
                             addPendingBlock(nextPendingAddress);
                         }
                     }
+                    end = std::chrono::system_clock::now();
+                    std::chrono::duration<double> elapsed_seconds = end - start;
+                    std::cout << "[Replicator] Time taken to process Pending Queue of size: " << size << " is " << elapsed_seconds.count() << "s\n";
                 } else {
                     if(otherMirrorClient.getReplicatorHealth() == HeartBeatResponse_Health_REINTEGRATION_AHEAD){
-                        cout << "[Replicator] Pending queue is empty, sleeping for 2 seconds, marking mirror as REINTEGRATION_AHEAD since other mirror has queue" << endl;
+                     //   cout << "[Replicator] Pending queue is empty, sleeping for 2 seconds, marking mirror as REINTEGRATION_AHEAD since other mirror has queue" << endl;
                         health = HeartBeatResponse_Health_REINTEGRATION_BEHIND;
                     } else {
-                        cout << "[Replicator] Pending queue is empty, sleeping for 2 seconds, marking mirror as HEALTHY" << endl;
+                       // cout << "[Replicator] Pending queue is empty, sleeping for 2 seconds, marking mirror as HEALTHY" << endl;
                         health = HeartBeatResponse_Health_HEALTHY;
                     }
                     usleep(2*1000000);

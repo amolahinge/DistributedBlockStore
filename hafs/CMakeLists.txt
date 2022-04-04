@@ -55,3 +55,10 @@ add_executable(status_checker "status_checker.cc")
   target_link_libraries(status_checker 
     ${PTHREAD_LIB} hw_grpc_proto
     ${_REFLECTION} ${_GRPC_GRPCPP} ${_PROTOBUF_LIBPROTOBUF})
+
+
+add_executable(recovery_testing "recovery_testing.cc")
+  target_link_libraries(recovery_testing 
+    ${PTHREAD_LIB} hw_grpc_proto
+    ${_REFLECTION} ${_GRPC_GRPCPP} ${_PROTOBUF_LIBPROTOBUF})
+  
