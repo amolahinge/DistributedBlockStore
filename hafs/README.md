@@ -11,3 +11,10 @@ For running server
 
 For running the basic client
 ```./basic_read_write``` Note that the address is hardcoded, be aware about that!
+
+
+Recovery Testing
+    1. Test case : primary receives write request and fails 
+       Output : not persisted on either on primary & backup
+
+``./recovery_testing --tc=primaryFail``

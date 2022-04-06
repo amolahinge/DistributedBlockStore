@@ -5,14 +5,13 @@ using namespace std;
 
 
 int main() {
-    HafsClientFactory client("0.0.0.0:8090", "0.0.0.0:8091");
-    HafsClient client1(grpc::CreateChannel("0.0.0.0:8090", grpc::InsecureChannelCredentials()), "0.0.0.0:8090", false);
-    HafsClient client2(grpc::CreateChannel("0.0.0.0:8091", grpc::InsecureChannelCredentials()), "0.0.0.0:8091", false);
+    HafsClientFactory client("server-0.test1.uwmadison744-f21.emulab.net:50052", 
+    "server-1.test1.uwmadison744-f21.emulab.net:50053");
     string res;
     // // client.Read(0, &res);
     // // cout << "Data read: " << res << endl;
 
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < 7000; i++) {
         client.Write(i*4096, string(4096, 'a'));
     }
 
@@ -30,13 +29,13 @@ int main() {
     // // cout << "Data read: " << res << endl;
     // client1.Read(8192 + 2048, &res);
     // cout << "Data read: " << res << endl;
-    client.Read(8192 + 2048 + 8192 + 4096, &res);
-    cout << "Data read: " << res << endl;
-    cout << "Data Size: " << res.size() << endl;
-    client.Read(8192 + 2048 + 8192 + 8192, &res);
-    cout << "Data read: " << res << endl;
-    cout << "Data Size: " << res.size() << endl;
-    // client.Read(8192, &res);
+    // client.Read(8192 + 2048 + 8192 + 4096, &res);
+    // cout << "Data read: " << res << endl;
+    // cout << "Data Size: " << res.size() << endl;
+    // client.Read(8192 + 2048 + 8192 + 8192, &res);
+    // cout << "Data read: " << res << endl;
+    // cout << "Data Size: " << res.size() << endl;
+    // // client.Read(8192, &res);
     // cout << "Data read: " << res << endl;
     // client.Read(8192 + 4096, &res);
     // cout << "Data read: " << res << endl;
@@ -58,6 +57,6 @@ int main() {
     // // client.Read(8392704, &res2);
     // // cout << "Data read: " << res2 << endl;
 
-    usleep(10*1000000);
+  //  usleep(10*1000000);
     return 0;
 }

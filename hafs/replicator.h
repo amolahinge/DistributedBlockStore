@@ -53,11 +53,11 @@ class Replicator {
                     while(!pendingBlocks.empty()) {
 
                         int nextPendingAddress = removeAndGetLastPendingBlock();
-                        cout<< "[Replicator] Processing pending block [" << nextPendingAddress <<  "]" << endl;
+                 //       cout<< "[Replicator] Processing pending block [" << nextPendingAddress <<  "]" << endl;
                         string data;
                         blockManager.read(nextPendingAddress, &data);
                         if(!otherMirrorClient.ReplicateBlock(nextPendingAddress, data)) {
-                            cout<< "[Replicator] Block [" << nextPendingAddress <<  "] failed while trying to replicate, requeueing!" << endl;
+                     //       cout<< "[Replicator] Block [" << nextPendingAddress <<  "] failed while trying to replicate, requeueing!" << endl;
                             addPendingBlock(nextPendingAddress);
                         }
                     }

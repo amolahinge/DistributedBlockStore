@@ -69,7 +69,6 @@ class HafsImpl final : public Hafs::Service {
 
         Status Write(ServerContext *context, const WriteRequest *req, Response *res) override {
             std::cout << "[Server] (Write) addr=" << req->address() << std::endl;
-            std::cout << "[DEBUG AMOLA] server role " << role << std::endl;
             crash(req->address(), "primaryFail");
             if(!replicator.otherMirrorClient.getIsAlive()) {
                 std::cout << "[Server](write) Other Replica down, sending block to replicator after local write!!" << std::endl;
@@ -95,7 +94,7 @@ class HafsImpl final : public Hafs::Service {
         }
 
         Status ReplicateBlock(ServerContext *context, const WriteRequest *req, Response *res) override {
-            std::cout << "[Server] (ReplicateBlock) addr=" << req->address() << std::endl;
+         //   std::cout << "[Server] (ReplicateBlock) addr=" << req->address() << std::endl;
             blockManager.write(req->address(), req->data());
             
             res->set_status(Response_Status_VALID);
@@ -105,12 +104,12 @@ class HafsImpl final : public Hafs::Service {
 
         void crash(int address, string mask){
             if (address == 4096 && mask == "primaryFail" && role == HeartBeatResponse_Role_PRIMARY){
-                cout << "Primary failing before sending request to backup" << endl;
+                cout << "[Testing] Primary failing before sending request to backup" << endl;
                 exit(1);
             }
 
             else if (address == 8192 && mask == "clientRetryRequired" && role == HeartBeatResponse_Role_PRIMARY){
-                cout << "Primary failing after receiving ack from backup (Temp inconsistency)" << endl;
+                cout << "[Testing] Primary failing after receiving ack from backup (Temp inconsistency)" << endl;
                 exit(1);
             }
 
